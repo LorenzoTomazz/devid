@@ -3,9 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Meme Style</title>
+    <style>
+        body {
+            background-color: #ffeb3b;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            color: #ff5722;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-top: 50px;
+            color: #d32f2f;
+        }
+
+        .meme-text {
+            font-size: 2em;
+            color: #4caf50;
+            background-color: #ffffff;
+            border: 2px solid #ff5722;
+            display: inline-block;
+            padding: 20px;
+            margin-top: 30px;
+            text-transform: uppercase;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        .image-container {
+            margin-top: 30px;
+        }
+
+        .meme-image {
+            max-width: 80%;
+            border: 5px solid #ff5722;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .meme-text img {
+            width: 50px;
+            height: 50px;
+            margin: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+    </style>
 </head>
 <body>
-    <h1>DEVID BRUN</h1>
+    <h1>Serhii Kushnir</h1>
+    <div class="meme-text">Mi piace la banana</div>
+    <div class="meme-text">E se fossi gay?</div>
+    <div class="image-container">
+        <img class="meme-image" src="down.jpg" alt="Random Meme">
+    </div>
 </body>
 </html>
