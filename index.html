@@ -1,72 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serhii</title>
-    <style>
-        body {
-            background-color: #ffeb3b;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            text-align: center;
-            color: #ff5722;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Segmenti Attaccati al Mouse</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background-color: #f0f0f0;
+      overflow: hidden;
+    }
 
-        h1 {
-            font-size: 3em;
-            margin-top: 50px;
-            color: #d32f2f;
-        }
+    .segment {
+      width: 30px;
+      height: 60px;
+      background-color: #007bff;
+      border-radius: 10px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: translate(-50%, -50%);
+    }
 
-        .meme-text {
-            font-size: 2em;
-            color: #4caf50;
-            background-color: #ffffff;
-            border: 2px solid #ff5722;
-            display: inline-block;
-            padding: 20px;
-            margin-top: 30px;
-            text-transform: uppercase;
-            animation: blink 1s infinite alternate;
-        }
-
-        @keyframes blink {
-            0% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0.5;
-            }
-        }
-
-        .image-container {
-            margin-top: 30px;
-        }
-
-        .meme-image {
-            max-width: 80%;
-            border: 5px solid #ff5722;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .meme-text img {
-            width: 50px;
-            height: 50px;
-            margin: 10px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-    </style>
+    .tip {
+      width: 40px;
+      height: 40px;
+      background-color: #007bff;
+      border-radius: 50%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: translate(-50%, -50%);
+    }
+  </style>
 </head>
 <body>
-    <h1>Serhii Kushnir</h1>
-    <div class="meme-text">Mi piace la banana</div>
-    <div class="meme-text">E se fossi gay?</div>
-    <div class="image-container">
-        <img class="meme-image" src="down.jpg" alt="Random Meme">
-    </div>
+  <!-- Segmenti della "figura" -->
+  <div class="segment"></div>
+  <div class="segment"></div>
+  <div class="segment"></div>
+  <div class="segment"></div>
+  <div class="tip"></div>
+
+  <script>
+    const segments = document.querySelectorAll('.segment');
+    const tip = document.querySelector('.tip');
+
+    // Posizioni iniziali
+    let positions = Array.from({ length: segments.length + 1 }, () => ({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
+    }));
+
+    // Segui il mouse
+    document.addEventListener('mousemove', (e) => {
+      positions[0] = { x: e.clientX, y: e.clientY }; // La punta segue direttamente
+    });
+
+    // Animazione fluida dei segmenti
+    function animate() {
+      // Aggiorna la posizione della punta
+      tip.style.transform = `translate(${positions[0].x}px, ${positions[0].y}px)`;
+
+      // Ogni segmento segue la posizione precedente
+      segments.forEach((segment, index) => {
+        const target = positions[index]; // Segmento precedente
+        const current = positions[index + 1];
+
+        // Interpolazione per un movimento fluido
+        current.x += (target.x - current.x) * 0.2;
+        current.y += (target.y - current.y) * 0.2;
+
+        segment.style.transform = `translate(${current.x}px, ${current.y}px)`;
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
 </body>
 </html>
