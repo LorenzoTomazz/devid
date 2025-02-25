@@ -14,7 +14,7 @@
       justify-content: center;
       align-items: center;
     }
-
+    
     #box {
       position: fixed;
       top: 0;
@@ -24,27 +24,44 @@
       z-index: -1;
       filter: blur(5px); /* Sfocatura iniziale */
     }
-
+    
     .card {
       background: white;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
       text-align: center;
-      position: absolute;
+      position: relative;
+      z-index: 1;
     }
-
-    .hidden {
-      display: none;
+    
+    .card input {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    
+    .card button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    
+    .card button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
   <!-- Contenitore per lo sfondo -->
   <div id="box">
-
     <script src="SwirlingCurvesBg.min.js"></script>
-
     <script>
       let colorbg = new Color4Bg.SwirlingCurvesBg({
         dom: "box",
@@ -52,54 +69,76 @@
         loop: true
       });
     </script>
-
   </div>
-
+  
   <!-- Form di login/registrazione -->
   <div id="authCard" class="card">
     <h2>Accedi o Registrati</h2>
-    <input type="text" id="username" placeholder="Username" /><br><br>
-    <input type="password" id="password" placeholder="Password" /><br><br>
-    <button onclick="login()">Login</button>
-    <button onclick="register()">Registrati</button>
+    <!-- In questo esempio usiamo l'email come username -->
+    <input type="email" id="email" placeholder="Email" /><br>
+    <input type="password" id="password" placeholder="Password" /><br>
+    <button id="loginBtn">Login</button>
+    <button id="registerBtn">Registrati</button>
   </div>
-
-  <!-- Script di autenticazione -->
-  <script>
-    const backendURL = "https://devid-9bxj.onrender.com";
-
-    function login() {
-      const username = document.getElementById('username').value;
+  
+  <!-- Script Firebase e funzioni di autenticazione -->
+  <script type="module">
+    // Importa le funzioni Firebase necessarie
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+    
+    // Configurazione Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVVjXrAg2SopoweypmZfjwIg0MHX2plyk",
+      authDomain: "dbdevid-7995e.firebaseapp.com",
+      databaseURL: "https://dbdevid-7995e-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "dbdevid-7995e",
+      storageBucket: "dbdevid-7995e.firebasestorage.app",
+      messagingSenderId: "594705315562",
+      appId: "1:594705315562:web:514928fe27bdfdb82e0993",
+      measurementId: "G-BW5RYZSHRG"
+    };
+    
+    // Inizializza Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+    
+    // Funzione per il login
+    const loginBtn = document.getElementById('loginBtn');
+    loginBtn.addEventListener('click', async () => {
+      const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-      fetch(`${backendURL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          localStorage.setItem('loggedIn', 'true');
-          window.location.href = 'gioco.html';
-        } else {
-          alert("Login fallito");
-        }
-      });
-    }
-
-    function register() {
-      const username = document.getElementById('username').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // Login riuscito: reindirizza a gioco.html
+        window.location.href = 'gioco.html';
+      } catch (error) {
+        alert("Login fallito: " + error.message);
+      }
+    });
+    
+    // Funzione per la registrazione
+    const registerBtn = document.getElementById('registerBtn');
+    registerBtn.addEventListener('click', async () => {
+      const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-      fetch(`${backendURL}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert(data.message);
-      });
-    }
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // Registrazione riuscita: salva i dati utente nel Realtime Database
+        const user = userCredential.user;
+        await set(ref(database, 'users/' + user.uid), {
+          email: user.email,
+          // Puoi salvare altri dati aggiuntivi qui, se necessario
+        });
+        alert("Registrazione effettuata con successo!");
+      } catch (error) {
+        alert("Registrazione fallita: " + error.message);
+      }
+    });
   </script>
 </body>
 </html>
