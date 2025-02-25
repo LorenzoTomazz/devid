@@ -72,7 +72,10 @@
         current.x += (target.x - current.x) * 0.2;
         current.y += (target.y - current.y) * 0.2;
 
-        segment.style.transform = `translate(${current.x}px, ${current.y}px)`;
+        // Calcola l'angolo di rotazione
+        const angle = Math.atan2(target.y - current.y, target.x - current.x) * 180 / Math.PI;
+
+        segment.style.transform = `translate(${current.x}px, ${current.y}px) rotate(${angle}deg)`;
       });
 
       requestAnimationFrame(animate);
