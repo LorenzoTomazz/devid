@@ -1,66 +1,92 @@
-const express = require('express');
-const bcrypt = require('bcrypt');
-const fs = require('fs');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-
+// server.js (Backend Node.js con Express)
+const express = require("express");
+const fs = require("fs");
+const path = require("path");
+const bcrypt = require("bcrypt");
+const cors = require("cors");
 const app = express();
-const PORT = 3000;
-const DATA_FILE = 'data.txt';
+const PORT = process.env.PORT || 3000;
 
+// Middleware per gestire i dati JSON e abilitare CORS
+app.use(express.json());
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.static("public")); // Cartella con HTML, CSS, JS
 
-// Legge il file degli utenti
-function readUsers() {
-  if (!fs.existsSync(DATA_FILE)) return [];
-  const data = fs.readFileSync(DATA_FILE, 'utf8').trim();
-  return data ? JSON.parse(data) : [];
-}
+const DATA_FILE = path.join(__dirname, "data.txt");
 
-// Scrive gli utenti nel file
-function writeUsers(users) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(users, null, 2));
-}
+// Funzione per leggere il file data.txt
+const readUsers = () => {
+    if (!fs.existsSync(DATA_FILE)) return [];
+    const data = fs.readFileSync(DATA_FILE, "utf8");
+    return data.split("\n").filter(line => line).map(line => {
+        const [username, password] = line.split(":");
+        return { username, password };
+    });
+};
 
-// **REGISTRAZIONE**
-app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.json({ message: "Compila tutti i campi!" });
-  }
+// Funzione per salvare un nuovo utente
+const saveUser = (username, passwordHash) => {
+    fs.appendFileSync(DATA_FILE, `${username}:${passwordHash}\n`);
+};
 
-  let users = readUsers();
-  if (users.some(user => user.username === username)) {
-    return res.json({ message: "Username già esistente!" });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  users.push({ username, password: hashedPassword });
-  writeUsers(users);
-
-  res.json({ message: "Registrazione avvenuta con successo!" });
+// Route per registrarsi
+app.post("/register", async (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ error: "Dati mancanti" });
+    
+    const users = readUsers();
+    if (users.find(u => u.username === username)) {
+        return res.status(400).json({ error: "Username già in uso" });
+    }
+    
+    const passwordHash = await bcrypt.hash(password, 10);
+    saveUser(username, passwordHash);
+    res.json({ message: "Registrazione completata" });
 });
 
-// **LOGIN**
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  let users = readUsers();
-  const user = users.find(user => user.username === username);
-
-  if (!user) {
-    return res.json({ message: "Utente non trovato!" });
-  }
-
-  const valid = await bcrypt.compare(password, user.password);
-  if (valid) {
-    res.json({ success: true, message: "Login effettuato!" });
-  } else {
-    res.json({ success: false, message: "Password errata!" });
-  }
+// Route per il login
+app.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+    const users = readUsers();
+    const user = users.find(u => u.username === username);
+    
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+        return res.status(401).json({ error: "Credenziali errate" });
+    }
+    res.json({ message: "Login riuscito", username });
 });
 
-// Avvia il server
-app.listen(PORT, () => {
-  console.log(`Server avviato su http://localhost:${PORT}`);
+app.listen(PORT, () => console.log(`Server attivo su https://devid-9bxj.onrender.com`));
+
+// Aggiornamento HTML e client-side
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("auth-form");
+    const messageBox = document.getElementById("message");
+    
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const action = document.querySelector("input[name='action']:checked").value;
+        
+        const endpoint = action === "register" ? "/register" : "/login";
+        
+        try {
+            const response = await fetch(`https://devid-9bxj.onrender.com${endpoint}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+            
+            const data = await response.json();
+            messageBox.textContent = data.message || data.error;
+            
+            if (response.ok && action === "login") {
+                sessionStorage.setItem("username", username);
+                window.location.href = "home.html"; // Reindirizza alla pagina principale dopo il login
+            }
+        } catch (error) {
+            console.error("Errore nella richiesta:", error);
+        }
+    });
 });

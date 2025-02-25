@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Segmenti Attaccati al Mouse</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background-color: #f0f0f0;
+      overflow: hidden;
+    }
+
+    #box {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1; /* Assicura che sia dietro gli altri elementi */
+    }
+
+    .segment {
+      width: 30px;
+      height: 60px;
+      background-color: #007bff;
+      border-radius: 10px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    .tip {
+      width: 40px;
+      height: 40px;
+      background-color: #007bff;
+      border-radius: 50%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <script>
+    if (!localStorage.getItem('loggedIn')) {
+      alert('Devi prima effettuare il login o registrarti.');
+      window.location.href = 'index.html';
+    }
+  </script>
+
+  <!-- Contenitore per lo sfondo -->
+  <div id="box"></div>
+
+  <!-- Segmenti della "figura" -->
+  <div class="segment"></div>
+  <div class="segment"></div>
+  <div class="segment"></div>
+  <div class="segment"></div>
+  <div class="tip"></div>
+
+  <script>
+    const segments = document.querySelectorAll('.segment');
+    const tip = document.querySelector('.tip');
+
+    let positions = Array.from({ length: segments.length + 1 }, () => ({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
+    }));
+
+    document.addEventListener('mousemove', (e) => {
+      positions[0] = { x: e.clientX, y: e.clientY };
+    });
+
+    function animate() {
+      tip.style.transform = `translate(${positions[0].x}px, ${positions[0].y}px)`;
+
+      segments.forEach((segment, index) => {
+        const target = positions[index];
+        const current = positions[index + 1];
+
+        current.x += (target.x - current.x) * 0.2;
+        current.y += (target.y - current.y) * 0.2;
+
+        const angle = Math.atan2(target.y - current.y, target.x - current.x) * 180 / Math.PI;
+        segment.style.transform = `translate(${current.x}px, ${current.y}px) rotate(${angle}deg)`;
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+
+  <script src="SwirlingCurvesBg.min.js"></script>
+
+  <script>
+    let colorbg = new Color4Bg.SwirlingCurvesBg({
+      dom: "box",
+      colors: ["#E0BBE4","#957DAD","#D291BC","#FEC8D8","#FFDFD3","#E0BBE4"],
+      loop: true
+    });
+  </script>
+
+</body>
+</html>
