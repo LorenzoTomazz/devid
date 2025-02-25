@@ -3,35 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Segmenti Attaccati al Mouse</title>
+  <title>Segmenti Attaccati al Mouse - Gioco</title>
+  <!-- Inizializzazione Firebase e controllo autenticazione -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
-  
+
     const firebaseConfig = {
       apiKey: "AIzaSyCVVjXrAg2SopoweypmZfjwIg0MHX2plyk",
       authDomain: "dbdevid-7995e.firebaseapp.com",
       databaseURL: "https://dbdevid-7995e-default-rtdb.europe-west1.firebasedatabase.app",
       projectId: "dbdevid-7995e",
-      storageBucket: "dbdevid-7995e.appspot.com",  // Assicurati che sia corretto
+      storageBucket: "dbdevid-7995e.firebasestorage.app",
       messagingSenderId: "594705315562",
       appId: "1:594705315562:web:514928fe27bdfdb82e0993",
       measurementId: "G-BW5RYZSHRG"
     };
-  
+
     // Inizializza Firebase
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-  
-    // Controlla se l'utente è autenticato
+    const auth = getAuth(app);
+
+    // Verifica se l'utente è autenticato; se non lo è, reindirizza a index.html
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        alert("Accesso negato! Devi effettuare il login.");
-        window.location.href = "index.html"; // Rimanda alla pagina di login
+        alert("Devi effettuare il login o registrarti.");
+        window.location.href = "index.html";
       }
     });
   </script>
-  
   <style>
     body {
       margin: 0;
@@ -46,7 +46,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: -1; /* Assicura che sia dietro gli altri elementi */
+      z-index: -1; /* Sfondo dietro agli altri elementi */
     }
 
     .segment {
@@ -117,11 +117,10 @@
   </script>
 
   <script src="SwirlingCurvesBg.min.js"></script>
-
   <script>
     let colorbg = new Color4Bg.SwirlingCurvesBg({
       dom: "box",
-      colors: ["#E0BBE4","#957DAD","#D291BC","#FEC8D8","#FFDFD3","#E0BBE4"],
+      colors: ["#E0BBE4", "#957DAD", "#D291BC", "#FEC8D8", "#FFDFD3", "#E0BBE4"],
       loop: true
     });
   </script>

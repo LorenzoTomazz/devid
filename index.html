@@ -65,7 +65,7 @@
     <script>
       let colorbg = new Color4Bg.SwirlingCurvesBg({
         dom: "box",
-        colors: ["#E0BBE4","#957DAD","#D291BC","#FEC8D8","#FFDFD3","#E0BBE4"],
+        colors: ["#E0BBE4", "#957DAD", "#D291BC", "#FEC8D8", "#FFDFD3", "#E0BBE4"],
         loop: true
       });
     </script>
@@ -74,7 +74,7 @@
   <!-- Form di login/registrazione -->
   <div id="authCard" class="card">
     <h2>Accedi o Registrati</h2>
-    <!-- In questo esempio usiamo l'email come username -->
+    <!-- Usiamo l'email come username -->
     <input type="email" id="email" placeholder="Email" /><br>
     <input type="password" id="password" placeholder="Password" /><br>
     <button id="loginBtn">Login</button>
@@ -83,13 +83,13 @@
   
   <!-- Script Firebase e funzioni di autenticazione -->
   <script type="module">
-    // Importa le funzioni Firebase necessarie
+    // Importa i moduli Firebase necessari
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
     
-    // Configurazione Firebase
+    // Configurazione Firebase (sostituisci eventuali valori se necessario)
     const firebaseConfig = {
       apiKey: "AIzaSyCVVjXrAg2SopoweypmZfjwIg0MHX2plyk",
       authDomain: "dbdevid-7995e.firebaseapp.com",
@@ -132,7 +132,7 @@
         const user = userCredential.user;
         await set(ref(database, 'users/' + user.uid), {
           email: user.email,
-          // Puoi salvare altri dati aggiuntivi qui, se necessario
+          // Aggiungi ulteriori dati se necessario (ad es. data di registrazione, etc.) 
         });
         alert("Registrazione effettuata con successo!");
       } catch (error) {
