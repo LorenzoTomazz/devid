@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Segmenti Attaccati al Mouse</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <script src="SwirlingCurvesBg.js"></script>
   <style>
     body {
       margin: 0;
       height: 100vh;
       background-color: #f0f0f0;
       overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     #box {
@@ -18,86 +22,73 @@
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: -1; /* Assicura che sia dietro gli altri elementi */
+      filter: blur(10px);
+      z-index: -1;
     }
 
-    .segment {
-      width: 30px;
-      height: 60px;
-      background-color: #007bff;
+    .card {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 20px;
       border-radius: 10px;
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      text-align: center;
     }
 
-    .tip {
-      width: 40px;
-      height: 40px;
-      background-color: #007bff;
-      border-radius: 50%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      transform: translate(-50%, -50%);
+    input, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Contenitore per lo sfondo -->
   <div id="box"></div>
 
-  <!-- Segmenti della "figura" -->
-  <div class="segment"></div>
-  <div class="segment"></div>
-  <div class="segment"></div>
-  <div class="segment"></div>
-  <div class="tip"></div>
+  <div class="card">
+    <h2>Login / Registrazione</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="register()">Registrati</button>
+    <button onclick="login()">Login</button>
+    <p id="message"></p>
+  </div>
 
   <script>
-    const segments = document.querySelectorAll('.segment');
-    const tip = document.querySelector('.tip');
-
-    let positions = Array.from({ length: segments.length + 1 }, () => ({
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2
-    }));
-
-    document.addEventListener('mousemove', (e) => {
-      positions[0] = { x: e.clientX, y: e.clientY };
+    let colorbg = new Color4Bg.SwirlingCurvesBg({
+      dom: "box",
+      colors: ["#000000","#1B1B1B","#2A1E36","#3A2152","#49236D","#582688"],
+      loop: true
     });
 
-    function animate() {
-      tip.style.transform = `translate(${positions[0].x}px, ${positions[0].y}px)`;
-
-      segments.forEach((segment, index) => {
-        const target = positions[index];
-        const current = positions[index + 1];
-
-        current.x += (target.x - current.x) * 0.2;
-        current.y += (target.y - current.y) * 0.2;
-
-        const angle = Math.atan2(target.y - current.y, target.x - current.x) * 180 / Math.PI;
-        segment.style.transform = `translate(${current.x}px, ${current.y}px) rotate(${angle}deg)`;
+    async function register() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
       });
-
-      requestAnimationFrame(animate);
+      const data = await res.json();
+      document.getElementById("message").innerText = data.message;
     }
 
-    animate();
+    async function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      document.getElementById("message").innerText = data.message;
+      if (data.success) {
+        window.location.href = "/home.html";
+      }
+    }
   </script>
-
-
-<script src="SwirlingCurvesBg.js"></script>
-<script>
-let colorbg = new Color4Bg.SwirlingCurvesBg({
-	dom: "box",
-	colors: ["#000000","#1B1B1B","#2A1E36","#3A2152","#49236D","#582688"],
-	loop: true
-})
-</script>	
 
 </body>
 </html>
