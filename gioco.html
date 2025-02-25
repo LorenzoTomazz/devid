@@ -6,31 +6,32 @@
   <title>Segmenti Attaccati al Mouse</title>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
-    
+  
     const firebaseConfig = {
       apiKey: "AIzaSyCVVjXrAg2SopoweypmZfjwIg0MHX2plyk",
       authDomain: "dbdevid-7995e.firebaseapp.com",
       databaseURL: "https://dbdevid-7995e-default-rtdb.europe-west1.firebasedatabase.app",
       projectId: "dbdevid-7995e",
-      storageBucket: "dbdevid-7995e.firebasestorage.app",
+      storageBucket: "dbdevid-7995e.appspot.com",  // Assicurati che sia corretto
       messagingSenderId: "594705315562",
       appId: "1:594705315562:web:514928fe27bdfdb82e0993",
       measurementId: "G-BW5RYZSHRG"
     };
-    
+  
+    // Inizializza Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
     const auth = getAuth();
-    
+  
+    // Controlla se l'utente è autenticato
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        alert('Devi prima effettuare il login o registrarti.');
-        window.location.href = 'index.html';
+        alert("Accesso negato! Devi effettuare il login.");
+        window.location.href = "index.html"; // Rimanda alla pagina di login
       }
     });
   </script>
+  
   <style>
     body {
       margin: 0;
